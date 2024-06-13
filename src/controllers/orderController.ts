@@ -1,32 +1,37 @@
-import { Request, Response } from 'express';
+import { Request, Response } from 'express'
 import OrderService from '../services/orderService';
 
-class OrderController {
-  createOrder = async (req: Request, res: Response) => {
+class OrderController{
+    createOrder = async (req: Request, res: Response) => {
+    const { userId, orderItems } = req.body;
+
     try {
-      const { userId, products } = req.body;
+      const order = await OrderService.createOrder(userId, orderItems);
+      res.status(201).json({ orderProducts: order });
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 
-      if (!userId || !products) {
-        return res.status(400).json({ message: 'userId and products are required' });
-      }
+  getOrders = async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    try {
+      const orders = await OrderService.getOrders(userId);
+      res.status(200).json(orders);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 
-      if (!Array.isArray(products) || products.length === 0) {
-        return res.status(400).json({ message: 'products must be a non-empty array' });
-      }
-
-      for (const product of products) {
-        if (!product.productId || !product.quantity || !product.price) {
-          return res.status(400).json({ message: 'Each product must have productId, quantity, and price' });
-        }
-      }
-
-      const order = await OrderService.createOrder(userId, products);
-      res.status(201).json(order);
-    } catch (error) {
-      console.error('Error creating order:', error);
-      res.status(500).json({ message: 'Internal server error' });
+  deleteOrder = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+      const order = await OrderService.deleteOrder(id);
+      res.status(200).json(order);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
     }
   }
 }
 
-export default OrderController
+export default OrderController;

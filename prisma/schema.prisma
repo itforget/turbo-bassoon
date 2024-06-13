@@ -40,8 +40,8 @@ model Order {
   id         String       @id @default(uuid())
   totalValue Float        @map("total_value")
   status     StatusPedido @default(EM_PROCESSAMENTO)
-  createdAt  DateTime     @default(now())
   userId     String
+  createdAt  DateTime     @default(now())
   user       User         @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
 
