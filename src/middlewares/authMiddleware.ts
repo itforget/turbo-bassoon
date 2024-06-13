@@ -1,44 +1,31 @@
-import { Request, Response, NextFunction } from 'express'
-import jwt, { JwtPayload } from 'jsonwebtoken'
-import { PrismaClient } from '@prisma/client'
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import prisma from '../models/prismaClient';
+import User from '../models/user';
 
-const prisma = new PrismaClient()
+const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
 
-interface AuthRequest extends Request {
-  user?: { id: string }
-}
-
-export async function authMiddleware(
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction,
-) {
-  const authHeader = req.headers.authorization
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res
-      .status(401)
-      .json({ message: 'Token de autenticação não fornecido ou inválido' })
+  if (!authHeader) {
+    return res.status(401).json({ message: 'Token not provided' });
   }
-  const token = authHeader.substring(7)
+
+  const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string,
-    ) as JwtPayload
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
 
     const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-    })
+      where: { id: decoded.id },
+    });
 
     if (!user) {
-      return res.status(401).json({ message: 'Usuário não encontrado' })
+      return res.status(401).json({ message: 'User not found' });
     }
-
-    req.user = { id: user.id }
-
-    next()
+    next();
   } catch (error) {
-    return res.status(401).json({ message: 'Token inválido ou expirado' })
+    return res.status(401).json({ message: 'Invalid token' });
   }
-}
+};
+
+export default authMiddleware;

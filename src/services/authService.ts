@@ -6,12 +6,11 @@ class authService {
     const user = await prisma.user.findUnique({
       where: { email },
     })
-    console.log(user)
     if (user) {
       const isPasswordCorrect = await bcrypt.compare(password, user.password)
       if (isPasswordCorrect) {
         const token = generateToken(user)
-        return token
+        return {token: token}
       }
     }
     return null

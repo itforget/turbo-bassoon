@@ -5,19 +5,22 @@ import bcrypt from 'bcrypt'
 
 class UserService {
   static async createUser(data: User) {
-    const salt = process.env.KEY_SALT
-    const hashedPassword = await bcrypt.hash(data.password, salt)
-    const newUser = await prisma.user.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        password: hashedPassword,
-        address: data.address,
-        imgUrl: data.imgUrl,
-        role: Roles.USER,
-      },
-    })
-    return newUser
+    try {
+      const hashedPassword = await bcrypt.hash(data.password, 10)
+      const newUser = await prisma.user.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          password: hashedPassword,
+          address: data.address,
+          imgUrl: data.imgUrl,
+          role: Roles.USER,
+        },
+      })
+      return newUser
+    } catch (error: any) {
+      throw new Error(`Error creating user: ${error.message}`)
+    }
   }
 
   static async getUsers() {

@@ -24,10 +24,9 @@ class UserController {
       })
       res.status(201).json({ message: 'Usuário criado com sucesso', newUser })
     } catch (error) {
-      res.status(500).json({ error: 'Erro ao criar usuário' })
+      console.error('Erro ao criar usuário:', error)
     }
   }
-
   getUserById = async (req: Request, res: Response) => {
     const userId = req.params.id
     try {
