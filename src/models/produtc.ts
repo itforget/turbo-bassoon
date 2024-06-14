@@ -5,5 +5,6 @@ interface Product {
   description: string
   category: string
   imgUrl: string
+  location: string
 }
 export default Product

@@ -2,7 +2,7 @@ interface User {
   name: string
   email: string
   password: string
-  address: string
+  location: string
   imgUrl: string
   role: string
 }

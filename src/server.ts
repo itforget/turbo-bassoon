@@ -16,7 +16,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use('/api/users', userRoutes)
-app.use('/api/products', authMiddleware, productRoutes)
+app.use('/api/products', productRoutes)
 app.use('/api/orders', authMiddleware, orderRoutes)
 app.use('/api/auth', authRoutes)
 

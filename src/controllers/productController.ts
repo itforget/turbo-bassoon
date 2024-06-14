@@ -12,7 +12,10 @@ class ProductController {
   }
 
   createProduct = async (req: Request, res: Response) => {
-    const { name, description, price, imgUrl, amount, category } = req.body
+    const { name, description, price, imgUrl, location, amount, category } = req.body
+    const cookieId = req.headers.cookie || ''
+    const sliptCookie = cookieId.split('=')[1]
+    const userId = sliptCookie
     try {
       const newProduct = await ProductService.createProduct({
         name,
@@ -21,12 +24,13 @@ class ProductController {
         description,
         category,
         imgUrl,
-      })
+        location
+      }, userId)
       res
         .status(201)
         .json({ message: 'Produto criado com sucesso', newProduct })
-    } catch (error) {
-      res.status(500).json({ error: 'Erro ao criar produto' })
+    } catch (error: any) {
+      res.status(500).json({ error: error.message })
     }
   }
 
@@ -42,7 +46,7 @@ class ProductController {
 
   updateProduct = async (req: Request, res: Response) => {
     const productId = req.params.id
-    const { name, description, price, imgUrl, amount, category } = req.body
+    const { name, description, price, imgUrl, amount, category, location } = req.body
     try {
       const updatedProduct = await ProductService.updateProduct(productId, {
         name,
@@ -51,6 +55,7 @@ class ProductController {
         description,
         category,
         imgUrl,
+        location
       })
       res
         .status(200)

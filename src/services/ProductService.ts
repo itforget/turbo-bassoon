@@ -7,7 +7,14 @@ class ProductService {
     return products
   }
 
-  static async createProduct(data: Product) {
+  static async createProduct(data: Product, userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    })
+    if (!user) {
+      throw new Error('User not found')
+    }
+
     const newProduct = await prisma.product.create({
       data: {
         name: data.name,
@@ -16,6 +23,7 @@ class ProductService {
         description: data.description,
         category: data.category,
         imgUrl: data.imgUrl,
+        location: user.location,
       },
     })
     return newProduct

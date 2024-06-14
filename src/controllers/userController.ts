@@ -12,13 +12,13 @@ class UserController {
   }
 
   createUser = async (req: Request, res: Response) => {
-    const { name, email, password, address, imgUrl, role } = req.body
+    const { name, email, password, location, imgUrl, role } = req.body
     try {
       const newUser = await UserService.createUser({
         name,
         email,
         password,
-        address,
+        location,
         imgUrl,
         role,
       })
@@ -39,13 +39,13 @@ class UserController {
 
   updateUser = async (req: Request, res: Response) => {
     const userId = req.params.id
-    const { name, email, password, address, imgUrl, role } = req.body
+    const { name, email, password, location, imgUrl, role } = req.body
     try {
       const updatedUser = await UserService.updateUser(userId, {
         name,
         email,
         password,
-        address,
+        location,
         imgUrl,
         role,
       })
